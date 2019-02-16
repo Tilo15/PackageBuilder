@@ -1,0 +1,3 @@
+{
+	"SystemImports": ["/bin/make", "/bin/awk", "/bin/expr"],
+}

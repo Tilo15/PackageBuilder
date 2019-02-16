@@ -69,6 +69,11 @@ class PackageBuilder:
 
 
     def report(self):
+        loader_seq = ["⠋", "⠙", "⠸", "⠴", "⠦", "⠇"]
+        loader_position = 0
+        loader_delay = 10
+        loader_delay_position = 0
+
         last_len = 0
         last_task = self.tasks_completed
         while not self.complete:
@@ -77,12 +82,20 @@ class PackageBuilder:
                 info = self.current_task.Probe()
 
             if(last_task != self.tasks_completed):
-                sys.stdout.write("[Task %i/%i] 100%%\n" % (last_task, self.task_count)) 
+                sys.stdout.write("  ✓ [Task %i/%i] 100%%\n" % (last_task, self.task_count)) 
                 last_task = self.tasks_completed
 
-            text = "[Task %i/%i] %0.2d%%  %s" % (self.tasks_completed, self.task_count, info[1] * 100, info[0])
+            text = "  %s [Task %i/%i] %0.2d%%  %s" % (loader_seq[loader_position], self.tasks_completed, self.task_count, info[1] * 100, info[0])
             sys.stdout.write(text + (" " * (last_len - len(text))) + "\r")
             last_len = len(text)
+
+            loader_delay_position += 1
+            if(loader_delay_position >= loader_delay):
+                loader_delay_position = 0
+                loader_position += 1
+                if(loader_position >= len(loader_seq)):
+                    loader_position = 0
+
             time.sleep(0.01)
 
         print("\n\nComplete!")

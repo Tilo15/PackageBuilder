@@ -7,7 +7,7 @@
 	"Deps": [],
 	"Build": {
 		"PreBuild": [
-			"../configure --disable-nls --disable-werror"
+			"../configure --disable-werror"
 		],
 		"Build": "make; make install",
 		"PostBuild": ["make clean"],
@@ -17,6 +17,7 @@
 			"Archive": "http://ftp.gnu.org/gnu/binutils/binutils-2.31.1.tar.xz",
 			"Patches": []
 		},
-		"SystemImports": ["/bin/sh", "/bin/gcc", "/bin/make", "/bin/sed", "/bin/expr"]
+		"SystemImports": ["/bin/make", "/bin/awk", "/bin/expr"],
+		"Tools": ["gcc",]
 	}
 }

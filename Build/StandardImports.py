@@ -27,6 +27,7 @@ STANDARD_IMPORTS = [
     "/bin/rmdir",
     "/bin/sed",
     "/bin/sh",
+    "/bin/sort",
     "/bin/stty",
     "/bin/su",
     "/bin/sync",

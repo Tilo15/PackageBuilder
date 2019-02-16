@@ -14,7 +14,7 @@ class AutoAcquirer(Acquirer):
             if(acquirer.Understands(address)):
                 self.acquirer = acquirer(address, dest)
 
-        if(acquirer == None):
+        if(self.acquirer == None):
             raise Exception("Could not find acquirer for address '%s'" % address)
 
     def Prepare(self):

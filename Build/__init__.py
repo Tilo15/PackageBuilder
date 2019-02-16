@@ -1,5 +1,6 @@
 from PackageBuilder.Task import Task
 from PackageBuilder.Spec.Build import Build as BuildSpec
+from PackageBuilder.Spec.Build import Tool as ToolSpec
 from PackageBuilder.Spec import Spec
 from PackageBuilder.Source import Source
 from PackageBuilder.LDD import ldd
@@ -27,6 +28,8 @@ class Build(Task):
 
         # Build all build dependancies
         for dep in self.spec.Deps:
+            # TODO handle optionality
+
             if(dep.SpecFile == ""):
                 raise Exception("Build dependancy must have a spec file")
 
@@ -36,16 +39,20 @@ class Build(Task):
             # Build
             tasks.append(Build(dep_spec.Build, self.root_path, False))
 
+        # Connect build tools
+        for tool in self.spec.Tools:
+            tasks.append(Tool(tool, self.root_path))
+
         return tasks
 
 
     def Run(self):
         # Progress reporting step size
-        step_size = 1.0/(len(self.spec.PreBuild) + len(self.spec.PostBuild) + 4)
+        step_size = 1.0/(len(self.spec.PreBuild) + len(self.spec.PostBuild) + len(self.spec.Tools) + 4)
 
         # Create skeliton folder structure
         for folder in STANDARD_SKEL:
-            os.mkdir("%s/%s" % (self.root_path, folder))
+            os.makedirs("%s/%s" % (self.root_path, folder), exist_ok=True)
 
         imports = self.spec.SystemImports
         imports.extend(STANDARD_IMPORTS)
@@ -76,7 +83,10 @@ class Build(Task):
         # Take snapshot of system
         self.step = "Creating Snapshot"
         self._umount_system()
-        snapshot = set(glob.glob("%s/**" % self.root_path, recursive=True))
+        snapshot = glob.glob("%s/**" % self.root_path, recursive=True)
+        snapshot.extend(glob.glob("%s/**/.*" % self.root_path, recursive=True))
+        snapshot = set(snapshot)
+
         self._mount_system()
         self.progress += step_size
 
@@ -99,9 +109,12 @@ class Build(Task):
 
         if(self.cleanup):
             self.step = "Cleaning Up"
+
+            self._chroot("rm -fr /src")
             
             # Get all files, and compare to old
             current = glob.glob("%s/**" % self.root_path, recursive=True)
+            current.extend(glob.glob("%s/**/.*" % self.root_path, recursive=True))
 
             # Reverse order of list
             current.reverse()
@@ -113,7 +126,10 @@ class Build(Task):
             # Unlink any pre-existing files
             for file in current:
                 if(file in snapshot):
-                    if(os.path.isdir(file)) and (len(os.listdir(file)) == 0):
+                    if(os.path.islink(file)):
+                        os.unlink(file)
+
+                    elif(os.path.isdir(file)) and (len(os.listdir(file)) == 0):
                         os.rmdir(file)
 
                     elif(os.path.isfile(file)):
@@ -146,3 +162,29 @@ class Build(Task):
         os.system("umount '%s/run'" % self.root_path)
 
 
+
+class Tool(Task):
+    def __init__(self, spec: ToolSpec, root_path: str):
+        self.spec = spec
+        self.root_path = root_path
+        self.progress = 0.0
+
+    def Prepare(self):
+        tasks = [Build(x, self.root_path) for x in self.spec.Builds]
+        tasks.extend([Source(x, self.root_path) for x in self.spec.Overlays])
+        return tasks
+
+    def Run(self):
+        for sys_import in self.spec.SystemImports:
+            self._import(sys_import)
+
+        self.progress = 1.0
+
+    def Probe(self):
+        return ("Importing tool into build environment", self.progress)
+
+
+    def _import(self, file):
+        parent = os.path.dirname(file)
+        os.makedirs("%s/%s" % (self.root_path, parent), exist_ok=True)
+        shutil.copy(file, "%s/%s" % (self.root_path, file))
