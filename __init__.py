@@ -1,5 +1,6 @@
 from PackageBuilder.Spec import Spec
 from PackageBuilder.Package.Chroot import Chroot
+from PackageBuilder.Package.BuildTool import BuildTool
 
 import sys
 import glob
@@ -8,7 +9,8 @@ import time
 import threading
 
 PACKAGE_TYPES = {
-    "chroot": Chroot
+    "chroot": Chroot,
+    "build-tool": BuildTool
 }
 
 
@@ -85,7 +87,7 @@ class PackageBuilder:
                 sys.stdout.write("  ✓ [Task %i/%i] 100%%\n" % (last_task, self.task_count)) 
                 last_task = self.tasks_completed
 
-            text = "  %s [Task %i/%i] %0.2d%%  %s" % (loader_seq[loader_position], self.tasks_completed, self.task_count, info[1] * 100, info[0])
+            text = "  %s [Task %i/%i] %.0f%%%s %s" % (loader_seq[loader_position], self.tasks_completed, self.task_count, info[1] * 100, " " * (3 - len(str("%.0f" %  (info[1] * 100)))), info[0])
             sys.stdout.write(text + (" " * (last_len - len(text))) + "\r")
             last_len = len(text)
 

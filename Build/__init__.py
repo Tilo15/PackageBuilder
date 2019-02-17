@@ -24,7 +24,7 @@ class Build(Task):
         tasks = []
 
         # Get Source
-        tasks.append(Source(self.spec.Source, "%s/src" % self.root_path))
+        tasks.extend([Source(x, "%s/src" % self.root_path) for x in self.spec.Sources])
 
         # Build all build dependancies
         for dep in self.spec.Deps:
@@ -170,12 +170,17 @@ class Tool(Task):
         self.progress = 0.0
 
     def Prepare(self):
-        tasks = [Build(x, self.root_path) for x in self.spec.Builds]
+        tasks = [Tool(x, self.root_path) for x in self.spec.Tools]
+        tasks.extend([Build(x, self.root_path) for x in self.spec.Builds])
         tasks.extend([Source(x, self.root_path) for x in self.spec.Overlays])
         return tasks
 
     def Run(self):
         for sys_import in self.spec.SystemImports:
+            libs = ldd(sys_import)
+            for lib in libs:
+                self._import(lib)
+                
             self._import(sys_import)
 
         self.progress = 1.0

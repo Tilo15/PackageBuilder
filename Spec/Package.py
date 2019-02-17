@@ -3,14 +3,14 @@ from PackageBuilder.Spec.Build import Build
 
 class Package:
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, file: str):
         self.Name = data["Name"]
         self.Summary = data["Summary"]
         self.Version = data["Version"]
         self.Arch = data["Arch"]
         self.Licence = data["Licence"]
         self.Deps = [Dependancy(x) for x in data["Deps"]]
-        self.Build = Build(data["Build"])
+        self.Build = Build(data["Build"], file)
 
         self.Icon = ""
         self.Website = ""

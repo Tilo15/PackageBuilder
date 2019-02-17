@@ -10,4 +10,4 @@ class Spec:
         data = ast.literal_eval(f.read())
         f.close()
 
-        return Package(data)
+        return Package(data, path)

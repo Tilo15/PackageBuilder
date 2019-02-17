@@ -1,0 +1,43 @@
+{
+	"Name": "gcc",
+	"Summary": "The GNU Compiler Collection",
+	"Version": "8.2.0",
+	"Arch": "x86_64",
+	"Licence": "GPL?",
+	"Deps": [],
+	"Build": {
+		"PreBuild": [
+			"mv ../../mpfr-4.0.1/ ../mpfr",
+			"mv ../../mpc-1.1.0/ ../mpc",
+			"mv ../../gmp-6.1.2/ ../gmp",
+			"../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --disable-libmpx --with-system-zlib"
+		],
+		"Build": "make",
+		"PostBuild": [
+			"make install",
+			"make clean"
+		],
+		"WorkingDirectiory": "gcc-8.2.0/build",
+		"Deps": [],
+		"Sources": 
+			[	
+				{
+					"Archive": "http://ftp.gnu.org/gnu/gcc/gcc-8.2.0/gcc-8.2.0.tar.xz",
+					"Patches": []
+				},
+				{
+					"Archive": "http://www.mpfr.org/mpfr-4.0.1/mpfr-4.0.1.tar.xz",
+					"Patches": []
+				},
+				{
+					"Archive": "https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz",
+					"Patches": []
+				},
+				{
+					"Archive": "http://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz",
+					"Patches": []
+				}
+			],
+		"Tools": ["gcc", "make"]
+	}
+}

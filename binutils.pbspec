@@ -13,11 +13,12 @@
 		"PostBuild": ["make clean"],
 		"WorkingDirectiory": "binutils-2.31.1/build",
 		"Deps": [],
-		"Source": {
-			"Archive": "http://ftp.gnu.org/gnu/binutils/binutils-2.31.1.tar.xz",
-			"Patches": []
-		},
-		"SystemImports": ["/bin/make", "/bin/awk", "/bin/expr"],
-		"Tools": ["gcc",]
+		"Sources": [
+			{
+				"Archive": "http://ftp.gnu.org/gnu/binutils/binutils-2.31.1.tar.xz",
+				"Patches": []
+			},
+		],
+		"Tools": ["gcc", "make"]
 	}
 }

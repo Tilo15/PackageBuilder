@@ -6,13 +6,13 @@ ACQUIRERS = [Filesystem, HTTP]
 
 
 class AutoAcquirer(Acquirer):
-    def __init__(self, address: str, dest: str):
-        super().__init__(address, dest)
+    def __init__(self, relative_path: str, address: str, dest: str):
+        super().__init__(relative_path, address, dest)
 
         self.acquirer = None
         for acquirer in ACQUIRERS:
             if(acquirer.Understands(address)):
-                self.acquirer = acquirer(address, dest)
+                self.acquirer = acquirer(relative_path, address, dest)
 
         if(self.acquirer == None):
             raise Exception("Could not find acquirer for address '%s'" % address)

@@ -34,5 +34,5 @@ class Package(Task):
 
 
     def _cleanup(self):
-        #shutil.rmtree(self.staging)
+        shutil.rmtree(self.staging)
         pass

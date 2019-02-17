@@ -5,14 +5,14 @@ import os
 import ast
 
 class Build:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, file: str):
         self.PreBuild = []
         self.Build = data["Build"]
         self.PostBuild = []
         self.WorkingDirectiory = data["WorkingDirectiory"]
         self.Deps = []
         self.Tools = []
-        self.Source = Source(data["Source"])
+        self.Sources = [Source(x, os.path.dirname(file)) for x in data["Sources"]]
         self.SystemImports = []
 
         if("PreBuild" in data):
@@ -45,12 +45,16 @@ class Tool:
         self.Overlays = []
         self.Builds = []
         self.SystemImports = []
+        self.Tools = []
 
         if("SystemImports" in data):
             self.SystemImports = data["SystemImports"]
 
         if("Builds" in data):
-            self.Builds = [Build(x) for x in data["Builds"]]
+            self.Builds = [Build(x, "%s/%s" % (specs, name)) for x in data["Builds"]]
 
         if("Overlays" in data):
-            self.Overlays = [Source(x) for x in data["Overlays"]]
+            self.Overlays = [Source(x, specs) for x in data["Overlays"]]
+
+        if("Tools" in data):
+            self.Tools = [Tool(x) for x in data["Tools"]]

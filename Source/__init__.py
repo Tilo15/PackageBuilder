@@ -23,7 +23,7 @@ class Source(Task):
         tasks = []
 
         # Get source
-        tasks.append(AutoAcquirer(self.spec.Archive, "%s/source" % self.staging))
+        tasks.append(AutoAcquirer(self.spec.RelativePath, self.spec.Archive, "%s/source" % self.staging))
 
         # Extract source
         tasks.append(AutoExtractor("%s/source" % self.staging, self.dest))
